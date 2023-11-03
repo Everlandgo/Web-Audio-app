@@ -80,40 +80,39 @@ function createbtn(text,X,Y){
 }
 
 function drawslider(){
-    volumeslider= createslider(0, 10, 2,0.1,860,225);
+    volumeslider= createslider(0, 10, 2,0.1,875,225);
 
-    drywetslider1= createslider(0, 10, 2,0.1,325,320);
+    drywetslider1= createslider(0, 10, 2,0.1,340,320);
+    outputslider1= createslider(0, 10, 2,0.1,425,320);
 
-    outputslider1= createslider(0, 10, 2,0.1,400,320);
+    drywetslider2= createslider(0, 10, 2,0.1,580,430);
+    outputslider2= createslider(0, 10, 2,0.1,680,430);
 
-    drywetslider2= createslider(0, 10, 2,0.1,580,400);
-    outputslider2= createslider(0, 10, 2,0.1,670,400);
-
-    drywetslider3= createslider(0, 10, 2,0.1,325,710);
-    outputslider3= createslider(0, 10, 2,0.1,400,710);
+    drywetslider3= createslider(0, 10, 2,0.1,340,710);
+    outputslider3= createslider(0, 10, 2,0.1,425,710);
 
     drywetslider4= createslider(0, 10, 2,0.1,560,710);
-    outputslider4= createslider(0, 10, 2,0.1,650,710);
+    outputslider4= createslider(0, 10, 2,0.1,660,710);
 
 
     textSize(12);
     fill('black');
     textFont('arial');
-//dynmcic compressor slider headings
-    text('dry/wet',55,245);
-    text('output \n level',130,240);
-
 //low-pass filter slider headings
-    text('dry/wet',300,325);
-    text('output \n level',400,320);
+    text('dry/wet',55,250);
+    text('output \n level',140,240);
 
-//reverb filter slider headings
+//dynmcic compressor slider headings
+text('dry/wet',290,365);
+    text('output \n level',395,350);
+
+//waveshape filter slider headings
     text('dry/wet',280,640);
     text('output \n level',380,630);
 
-//waveshape distortion slider headings
-    text('dry/wet',55,640);
-    text('output \n level',130,630);
+//reverb distortion slider headings
+    text('dry/wet',50,640);
+    text('output \n level',140,630);
 
 }
 
@@ -121,7 +120,7 @@ function createslider(minval, maxval, position, range,X,Y){
     var slider = createSlider(minval, maxval, position, range);
     slider.position(X,Y);
     slider.style('transform', 'rotate(90deg)');
-    slider.style("background", "red");
+    slider.addClass('mySliders');
 
     return slider;
 }
@@ -180,10 +179,8 @@ function pausefunction(){
   }
 
   function restartfunction(){
-    if(myaudiofile.isPlaying()){
         myaudiofile.jump(0);
         print('restart button clicked');
-    }
   }
 
   function toendfunction(){
