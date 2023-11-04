@@ -31,6 +31,10 @@ let delayknob;
 let distortionknob;
 let oversampleknob;
 
+let mic;
+let recorder;
+let soundFile;
+let state = 0;
 
 let islooping = false;
 let isreverse = false;
@@ -41,6 +45,12 @@ let x = (windowWidth - width) / 2;
 let y = (windowHeight - height) / 2;
 canvas.position(x, y);
 background('lightblue');
+
+mic = new p5.AudioIn();
+mic.start();
+recorder = new p5.SoundRecorder();
+recorder.setInput(mic);
+soundFile = new p5.SoundFile();
 
 // function to draw background boxes and its lablels
     drawingframe();
@@ -210,6 +220,9 @@ function pausefunction(){
         pausebtn.style('background-color', 'blue');
         print('Pause button clicked');
     }
+    if(soundFile.isPlaying()){
+        soundFile.pause();
+    }
 }
   
   function playfunction() {
@@ -230,6 +243,9 @@ function pausefunction(){
         pausebtn.style('background-color', 'white');
         myaudiofile.jump(0);
         print('stop button clicked');
+    }
+    if(soundFile.isPlaying()){
+        soundFile.stop();
     }
   }
 
@@ -259,8 +275,35 @@ function pausefunction(){
   }
 
   function recordfunction(){
+    console.log(state);
+    if(getAudioContext().state !== 'running'){
+        getAudioContext().resume();
+    }    
+    if(state === 0 && mic.enabled){
+        recordbtn.size(100,50);
+        recordbtn.style('background-color','#C3EB78');
+        recordbtn.html('Recording...');
+        recorder.record(soundFile);
+        state++;
+    }
+    else if(state === 1){
+        print('record stoped');
+        recorder.stop(); 
+        recordbtn.html('Finished\nrecording Click to download');
+        recordbtn.size(130,50);
+        recordbtn.style('background-color','#56cbf9');
+        state++;
+    }
+    else if(state === 2){
+        recordbtn.size(70,50);
+        recordbtn.html('Record');
+        recordbtn.style('background-color', 'white');
+        soundFile.play();
+        save(soundFile,'output.wav');
+        state=0;
+    }
+    }
 
-  }
 
   function reversefunction(){
     if(!isreverse){
