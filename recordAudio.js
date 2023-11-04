@@ -26,6 +26,10 @@ let kneeknob;
 let releaseknob;
 let ratioknob;
 let thresholdknob;
+let reverbknob;
+let delayknob;
+let distortionknob;
+let oversampleknob;
 
 
 let islooping = false;
@@ -38,9 +42,9 @@ let y = (windowHeight - height) / 2;
 canvas.position(x, y);
 background('lightblue');
 
-// function to draw background boxes 
+// function to draw background boxes and its lablels
     drawingframe();
-// function to write all the lables of the diagrams
+// function to write all the lables of the keys
     writelabels();
 // function to draw buttons 
     drawbuttons();
@@ -55,6 +59,12 @@ function preload(){
 }
 
 function draw(){
+
+    myaudiofile.setVolume(volumeslider.value());
+    
+    if(!myaudiofile.isPlaying()){
+        playbtn.style('background-color', 'white');
+    }
 
 }
 
@@ -81,8 +91,7 @@ function drawingframe(){
 }
 
 function drawbuttons(){
-
-    // creating top layer buttons
+    
     pausebtn=createbtn('Pause',340,40,pausefunction); 
     playbtn=createbtn('Play',420,40,playfunction);
     stopbtn=createbtn('Stop',500,40,stopfunction);
@@ -90,27 +99,29 @@ function drawbuttons(){
     endbtn=createbtn('Skip to end',660,40,toendfunction); 
     loopbtn=createbtn('Loop',740,40,loopfunction); 
     recordbtn=createbtn('record',820,40,recordfunction);
-    reversebtn=createbtn('Reverse',360,570,reversefunction); 
+    reversebtn=createbtn('Reverse',360,590,reversefunction); 
 }
 
 function drawslider(){
-    volumeslider= createslider(0, 10, 2,0.1,875,225);
 
-    drywetslider1= createslider(0, 10, 2,0.1,340,320);
-    outputslider1= createslider(0, 10, 2,0.1,425,320);
+    volumeslider= createslider(0, 20, 2,1,875,225);
+
+    drywetslider1= createslider(0, 10, 2,0.1,340,330);
+    outputslider1= createslider(0, 10, 2,0.1,425,330);
 
     drywetslider2= createslider(0, 10, 2,0.1,580,430);
     outputslider2= createslider(0, 10, 2,0.1,680,430);
 
-    drywetslider3= createslider(0, 10, 2,0.1,340,710);
-    outputslider3= createslider(0, 10, 2,0.1,425,710);
+    drywetslider3= createslider(0, 10, 2,0.1,340,720);
+    outputslider3= createslider(0, 10, 2,0.1,425,720);
 
-    drywetslider4= createslider(0, 10, 2,0.1,560,710);
-    outputslider4= createslider(0, 10, 2,0.1,660,710);
+    drywetslider4= createslider(0, 10, 2,0.1,560,720);
+    outputslider4= createslider(0, 10, 2,0.1,660,720);
 }
 
 function drawknob( ) {
-    frequencyknob=createknob(75,200,25,0);
+
+    frequencyknob=createknob(75,210,25,0);
     resonanceknob=createknob(80,0,25,0);
     
     attackknob=createknob(120,0,25,0);
@@ -119,30 +130,49 @@ function drawknob( ) {
     ratioknob==createknob(-140,90,25,0);
     thresholdknob==createknob(100,0,25,0);
 
-    reverbknob=createknob(-340,230,25,0);
+    reverbknob=createknob(-340,240,25,0);
     delayknob=createknob(80,0,25,0);
 
+    distortionknob=createknob(140,65,25,0);
+    oversampleknob=createknob(100,0,25,0);
 }
+
 function writelabels(){
     textSize(12);
     fill('black');
     textFont('arial');
 
 //low-pass filter slider headings
-    text('dry/wet',55,250);
-    text('output \n level',140,240);
+    text('dry/wet',55,270);
+    text('output \n level',140,260);
 
-//dynmcic compressor slider headings
-text('dry/wet',290,365);
-    text('output \n level',395,350);
+//dynamic compressor slider headings
+    text('dry/wet',290,370);
+    text('output \n level',395,360);
 
 //waveshape filter slider headings
-    text('dry/wet',280,640);
-    text('output \n level',380,630);
+    text('dry/wet',270,660);
+    text('output \n level',375,650);
 
 //reverb distortion slider headings
-    text('dry/wet',50,640);
-    text('output \n level',140,630);
+    text('dry/wet',50,660);
+    text('output \n level',140,650);
+
+    text('  cutoff \nfreqency',55,160);
+    text('resonance',125,175);
+
+    text('attack',260,180);
+    text('knee',350,180);
+    text('release',440,180);
+    text('ratio',300,270);
+    text('threshold',390,270);
+
+    text(' reverb\nduration',55,490);
+    text('decay\n rate',140,490);
+
+    text('distortion\n amount',270,560);
+    text('oversample',360,570);
+    
 }
 
 function createbtn(text,X,Y,callfunction){
