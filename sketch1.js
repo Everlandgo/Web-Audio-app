@@ -48,7 +48,6 @@ let canvas = createCanvas(800, 800);
 let x = (windowWidth - width) / 2;
 let y = (windowHeight - height) / 2;
 canvas.position(x, y);
-background('lightblue');
 
 mic = new p5.AudioIn();
 mic.start();
@@ -58,34 +57,33 @@ soundFile = new p5.SoundFile();
 fft = new p5.FFT();
 fft.setInput(mic);
 
-// function to draw background boxes and its lablels
-    drawingframe();
-// function to write all the lables of the keys
-    writelabels();
-// function to draw buttons 
-    drawbuttons();
-//function to draw sliders
-    drawslider();
-//function to draw sliders
-    drawknob();
-
+drawknobs();
+drawslider();
+drawbuttons();
 }
+
 function preload(){
     myaudiofile=loadSound('sound/house_lo.mp3');
 }
 
 function draw(){
-
+    clear();
+    background('lightblue');
+    drawingframe();
+    writelabels();
+    
     myaudiofile.setVolume(volumeslider.value());
     for (let knob of knobs) {
         knob.drawknob();
         knob.updateknob();
+        textSize(11);
+        fill(0);
+        text(knob.angle.toFixed(2), knob.x, knob.y+40); 
       }
-
 }
 
 function drawingframe(){
-
+    fill(255);
     rect(20,100,190,300);
     rect(235,100,270,400);
     rect(535,100,150,200);
@@ -93,7 +91,7 @@ function drawingframe(){
     rect(235,510,230,280);
     rect(490,520,270,270);
 
-    fill('black');
+    fill(0);
     textSize(20);
     textFont('Times new roman');
     text("Low-pass filter",60,130);
@@ -131,60 +129,61 @@ function drawslider(){
     drywetslider3= createslider(0, 10, 2,0.1,340,720);
     outputslider3= createslider(0, 10, 2,0.1,425,720);
 
-    drywetslider4= createslider(0, 10, 2,0.1,560,720);
-    outputslider4= createslider(0, 10, 2,0.1,660,720);
+    drywetslider4= createslider(0, 10, 2,0.1,560,730);
+    outputslider4= createslider(0, 10, 2,0.1,660,730);
 }
 
-function drawknob( ) {
+function drawknobs() {
 
-    frequencyknob=knobs.push(new Knob(75, 210, 25, 0,'frequencyknob'));
-    resonanceknob=knobs.push(new Knob(80, 0, 25, 0,'resonanceknob'));
-    // attackknob=knobs.push(new Knob(120, 0, 25, 0));
-    // kneeknob=knobs.push(new Knob(90, 0, 25, 0));
-    // releaseknob=knobs.push(new Knob(90, 0, 25, 0));
-    // ratioknob=knobs.push(new Knob(-140, 90, 25, 0));
-    thresholdknob=knobs.push(new Knob(100, 0, 25, 0));
+    frequencyknob=new Knob(75, 210, 25, 0,0,1);
+    knobs.push(frequencyknob);
+    resonanceknob=new Knob(155, 210, 25, 0,0,1);
+    knobs.push(resonanceknob);
 
-    // reverbknob=createknob(-340,240,25,0);
-    // delayknob=createknob(80,0,25,0);
+    attackknob=new Knob(275, 210, 25, 0);
+    knobs.push(attackknob);
+    kneeknob=new Knob(365, 210, 25, 0);
+    knobs.push(kneeknob);
+    releaseknob=new Knob(455, 210, 25, 0);
+    knobs.push(releaseknob);
+    ratioknob=new Knob(420, 300, 25, 0);
+    knobs.push(ratioknob);
+    thresholdknob=new Knob(310, 300, 25, 0);
+    knobs.push(thresholdknob);
 
-    // distortionknob=createknob(140,65,25,0);
-    // oversampleknob=createknob(100,0,25,0);
+    reverbknob=new Knob(75, 530, 25, 0);
+    knobs.push(reverbknob);
+    delayknob=new Knob(155, 530, 25, 0);
+    knobs.push(delayknob);
+
+    distortionknob=new Knob(290, 605, 25, 0);
+    knobs.push(distortionknob);
+    oversampleknob=new Knob(390, 605, 25, 0);
+    knobs.push(oversampleknob);
+
 }
 
 function writelabels(){
     textSize(12);
     fill('black');
     textFont('arial');
-
-//low-pass filter slider headings
     text('dry/wet',55,270);
     text('output \n level',140,260);
-
-//dynamic compressor slider headings
     text('dry/wet',290,370);
     text('output \n level',395,360);
-
-//waveshape filter slider headings
-    text('dry/wet',270,660);
-    text('output \n level',375,650);
-
-//reverb distortion slider headings
+    text('dry/wet',270,670);
+    text('output \n level',375,660);
     text('dry/wet',50,660);
     text('output \n level',140,650);
-
     text('  cutoff \nfreqency',55,160);
     text('resonance',125,175);
-
     text('attack',260,180);
     text('knee',350,180);
     text('release',440,180);
     text('ratio',300,270);
     text('threshold',390,270);
-
-    text(' reverb\nduration',55,490);
-    text('decay\n rate',140,490);
-
+    text(' reverb\nduration',55,480);
+    text('decay\n rate',140,480);
     text('distortion\n amount',270,560);
     text('oversample',360,570);
     
@@ -206,16 +205,6 @@ function createslider(minval, maxval, position, range,X,Y){
     slider.addClass('mySliders');
     return slider;
 }
-
-function createknob(x,y,r,angle){
-    fill(255);
-    strokeWeight(1);
-    translate(x, y);
-    rotate(angle);
-    circle(0, 0, r * 2);
-    line(0, 0, r, 0);
-
-}  
 
 function pausefunction(){
     if(myaudiofile.isPlaying()){
@@ -308,8 +297,6 @@ function pausefunction(){
         state=0;
     }
     }
-
-
   function reversefunction(){
     if(!isreverse){
         myaudiofile.reverseBuffer(true);
@@ -325,17 +312,18 @@ function pausefunction(){
   }
 
   function mousePressed() {
-    let knobnumber=0;
     for (let knob of knobs) {
       knob.knobclicked();
-      print('mouse pressed for knob', knob.isdragging);
-      knobnumber++;
+      if(knob.isdragging){
+        knob.updateknob();
+        print('selected knob', knob);
+      }
     }
   }
 
   function mouseReleased() {
     for (let knob of knobs) {
-      knob.release();
+      knob.knobReleased();
       print('mouse release for knob',knob)
 
     }
