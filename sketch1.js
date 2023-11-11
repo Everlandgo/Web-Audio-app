@@ -78,6 +78,8 @@ function setupfilters() {
   reverbeffect.disconnect();
   mastervolume.disconnect();
 
+  Inputfft.setInput(myaudiofile);
+
   myaudiofile.connect(lowpassfilter);
   lowpassfilter.connect(distortioneffect);
   distortioneffect.connect(compressoreffect);
@@ -85,7 +87,6 @@ function setupfilters() {
   reverbeffect.connect(mastervolume);
   mastervolume.connect();
 
-  Inputfft.setInput(myaudiofile);
   Outputfft.setInput(mastervolume);
 }
 
@@ -147,28 +148,29 @@ function drawspectrum(){
   let spectrumIN = Inputfft.analyze();
   noStroke();
   fill(255, 0, 255);
+
+  let boxX = 490;
+  let boxY = 520;
+  let boxwidth = 1300;
+  let boxheight= 130;
   
   for (let i = 0; i < spectrumIN.length; i++) {
-    let x = map(i, 0, spectrumIN.length, 490, 490 + 1300);
-    let h = -130 + map(spectrumIN[i], 0, 255, 130, 0);
-    rect(x, 520 + 130, 1300 / spectrumIN.length, h);
+    let x = map(i, 0, spectrumIN.length, boxX, boxX + boxwidth);
+    let h = -boxheight + map(spectrumIN[i], 0, 255, boxheight, 0);
+    rect(x, 520 + boxheight, boxwidth / spectrumIN.length, h);
   }
 
+
+  let spectrumOUT= Outputfft.analyze();
+  noStroke();
+  fill(0);  
+  for (let i = 0; i < spectrumOUT.length; i++) {
+    let x = map(i, 0, spectrumOUT.length, boxX, boxX + boxwidth);
+    let h = -boxheight + map(spectrumOUT[i], 0, 255, boxheight, 0);
+    rect(x, boxY+130 + boxheight, boxwidth / spectrumOUT.length, h);
+  }
   pop();
 
-    // let spectrumOUT= Outputfft.analyze();
-  // noStroke();
-  // fill(0);
-  // let inputBoxX = height;
-  // let inputBoxY = 200;
-  // let inputBoxWidth = 1300;
-  // let inputBoxHeight = 130;
-  
-  // for (let i = 0; i < spectrumOUT.length; i++) {
-  //   let x = map(i, 0, spectrumOUT.length, inputBoxX, inputBoxX + inputBoxWidth);
-  //   let h = -inputBoxHeight + map(spectrumOUT[i], 0, 255, inputBoxHeight, 0);
-  //   rect(x, inputBoxY + inputBoxHeight, inputBoxWidth / spectrumOUT.length, h);
-  // }
 
 }
 
