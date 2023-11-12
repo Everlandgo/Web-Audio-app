@@ -1,4 +1,5 @@
 class Knob {
+  //x axis, y axis, r (radius), angle,value(initial point), minval,maxval,name - knob name//
     constructor(x, y, r, angle,value, minval,maxval,name) {
       this.x = x;
       this.y = y;
@@ -10,6 +11,9 @@ class Knob {
       this.minval=minval;
       this.maxval=maxval;
       this.name=name;
+      this.angle = map(this.value, this.minval, this.maxval, 0, TWO_PI);
+      this.isdragging = false;
+      this.fill = 255;
 
     }
   
