@@ -28,7 +28,7 @@ let kneeknob = [];
 let releaseknob = [];
 let ratioknob = [];
 let thresholdknob = [];
-let reverbtimeknob = [];
+let reverbdurknob = [];
 let decayknob = [];
 let distortionknob = [];
 let oversampleknob = [];
@@ -91,7 +91,7 @@ function setupfilters() {
 }
 
 function setup() {
-  let canvas = createCanvas(800, 800);
+  let canvas = createCanvas(1200, 800);
   let x = (windowWidth - width) / 2;
   let y = (windowHeight - height) / 2;
   canvas.position(x, y);
@@ -103,7 +103,7 @@ function setup() {
 
 function draw() {
   clear();
-  background("lightblue");
+  background("#e4f0c2");
   drawingframe();
   writelabels();
   for (let knob of knobs) {
@@ -113,23 +113,25 @@ function draw() {
     textSize(11);
     text(knob.value.toFixed(1), knob.x, knob.y + 40);
   }
-
   drawspectrum();
 
-  if(myaudiofile.currentTime().toFixed(2) == myaudiofile.duration().toFixed(2)){
-  playbtn.style("background-color", "white");
+  if (myaudiofile.currentTime().toFixed(2) == myaudiofile.duration().toFixed(2)) {
+    playbtn.style("background-color", "white");
   }
 }
-
 
 function drawingframe() {
   fill(255);
   rect(20, 100, 190, 300);
-  rect(235, 100, 270, 400);
-  rect(535, 100, 150, 200);
   rect(20, 420, 190, 370);
-  rect(235, 510, 230, 280);
-  rect(480, 510, 310, 280);
+  rect(235, 100, 270, 400);
+  rect(235, 510, 270, 280);
+  rect(535, 100, 150, 200);
+  push();
+  fill("#e2e1e8");
+  rect(535, 320, 640, 230);
+  rect(535, 560, 640, 230);
+  pop();
 
   fill(0);
   textSize(20);
@@ -138,63 +140,76 @@ function drawingframe() {
   text("Dynamic compressor", 290, 130);
   text("Master \nvolume", 580, 130);
   text("Reverb", 80, 450);
-  text("Waveshaper distortion", 260, 540);
-  text("spectrum in ", 680, 530);
-  text("spectrum out", 680, 670);
+  text("Waveshaper distortion", 290, 540);
+  text("Spectrum In ", 540, 340);
+  text("Spectrum Out", 540, 580);
 }
 
-function drawspectrum(){
+function drawspectrum() {
   push();
   let spectrumIN = Inputfft.analyze();
   noStroke();
   fill(255, 0, 255);
 
-  let boxX = 490;
-  let boxY = 520;
-  let boxwidth = 1300;
-  let boxheight= 130;
-  
+  let boxX = 540;
+  let boxY = 345;
+  let boxwidth = 2800;
+  let boxheight = 200;
+
   for (let i = 0; i < spectrumIN.length; i++) {
     let x = map(i, 0, spectrumIN.length, boxX, boxX + boxwidth);
     let h = -boxheight + map(spectrumIN[i], 0, 255, boxheight, 0);
-    rect(x, 520 + boxheight, boxwidth / spectrumIN.length, h);
+    rect(x, boxY + boxheight, boxwidth / spectrumIN.length, h);
   }
 
+  let boxX2 = 540;
+  let boxY2 = 585;
+  let boxwidth2 = 630;
+  let boxheight2 = 200;
 
-  let spectrumOUT= Outputfft.analyze();
+  let spectrumOUT = Outputfft.analyze();
   noStroke();
-  fill(0);  
+  fill(0);
   for (let i = 0; i < spectrumOUT.length; i++) {
-    let x = map(i, 0, spectrumOUT.length, boxX, boxX + boxwidth);
-    let h = -boxheight + map(spectrumOUT[i], 0, 255, boxheight, 0);
-    rect(x, boxY+130 + boxheight, boxwidth / spectrumOUT.length, h);
+    let x = map(i, 0, spectrumOUT.length, boxX2, boxX2 + boxwidth2);
+    let h = -boxheight + map(spectrumOUT[i], 0, 255, boxheight2, 0);
+    rect(x, boxY2 + boxheight2, boxwidth2 / spectrumOUT.length, h);
   }
   pop();
-
-
 }
 
 function drawbuttons() {
-  pausebtn = createbtn("Pause", 340, 40, pausefunction);
-  playbtn = createbtn("Play", 420, 40, playfunction);
-  stopbtn = createbtn("Stop", 500, 40, stopfunction);
-  restartbtn = createbtn("Skip to start", 580, 40, restartfunction);
-  endbtn = createbtn("Skip to end", 660, 40, toendfunction);
-  loopbtn = createbtn("Loop", 740, 40, loopfunction);
-  recordbtn = createbtn("record", 820, 40, recordfunction);
-  reversebtn = createbtn("Reverse", 360, 590, reversefunction);
+  pausebtn = createbtn("Pause", 150, 30, pausefunction);
+  playbtn = createbtn("Play", 275, 30, playfunction);
+  stopbtn = createbtn("Stop", 400, 30, stopfunction);
+  restartbtn = createbtn("Skip to start", 525, 30, restartfunction);
+  endbtn = createbtn("Skip to end", 650, 30, toendfunction);
+  loopbtn = createbtn("Loop", 775, 30, loopfunction);
+  recordbtn = createbtn("record", 900, 30, recordfunction);
+  reversebtn = createbtn("Reverse", 180, 590, reversefunction);
 }
 
 function drawslider() {
-  volumeslider = createslider(0, 20, 2, 1, 875, 225,'volumeslider');
-  LP_drywetslider = createslider(0, 1, 0, 0.1, 340, 330,'LP_drywetslider');
-  LP_outputslider = createslider(0, 1, 0, 0.1, 425, 330,'LP_outputslider');
-  DY_drywetslider = createslider(0, 10, 0, 0.1, 580, 430,'DY_drywetslider');
-  DY_outputslider = createslider(0, 10, 0, 0.1, 680, 430,'DY_outputslider');
-  RE_drywetslider = createslider(0, 1, 0, 0.1, 340, 720,'RE_drywetslider');
-  RE_outputslider = createslider(0, 1, 0, 0.1, 425, 720,'RE_outputslider');
-  WAV_drywetslider = createslider(0, 10, 2, 0.1, 560, 730,'WAV_drywetslider');
-  WAV_outputslider = createslider(0, 10, 2, 0.1, 660, 730,'WAV_outputslider');
+  volumeslider = createslider(0, 20, 3, 1, 665, 220, "volumeslider");
+  LP_drywetslider = createslider(0, 1, 0.5, 0.1, 140, 330, "LP_drywetslider");
+  LP_outputslider = createslider(0, 1, 0.5, 0.1, 225, 330, "LP_outputslider");
+  DY_drywetslider = createslider(0, 1, 0.5, 0.1, 380, 430, "DY_drywetslider");
+  DY_outputslider = createslider(0, 1, 0.5, 0.1, 480, 430, "DY_outputslider");
+  RE_drywetslider = createslider(0, 1, 0.5, 0.1, 140, 720, "RE_drywetslider");
+  RE_outputslider = createslider(0, 1, 1, 0.1, 225, 720, "RE_outputslider");
+  WAV_drywetslider = createslider(0, 1, 0.5, 0.1, 380, 730, "WAV_drywetslider");
+  WAV_outputslider = createslider(0, 1, 0.5, 0.1, 480, 730, "WAV_outputslider");
+
+  lowpassfilter.drywet(LP_drywetslider.value());
+  lowpassfilter.amp(LP_outputslider.value());
+  distortioneffect.drywet(WAV_drywetslider.value());
+  distortioneffect.amp(WAV_outputslider.value());
+  compressoreffect.drywet(DY_drywetslider.value());
+  compressoreffect.amp(DY_outputslider.value());
+  reverbeffect.drywet(RE_drywetslider.value());
+  reverbeffect.amp(RE_outputslider.value());
+  mastervolume.amp(volumeslider.value());
+
 }
 
 function drawknobs() {
@@ -203,26 +218,36 @@ function drawknobs() {
   resonanceknob = new Knob(155, 210, 25, 0, 0.001, 0.001, 1000, "resonanceknob");
   knobs.push(resonanceknob);
 
-  attackknob = new Knob(275, 210, 25, 0, 0, 0, 1, "attackknob");
+  attackknob = new Knob(275, 210, 25, 0, 0.003, 0, 1, "attackknob");
   knobs.push(attackknob);
-  kneeknob = new Knob(365, 210, 25, 0, 0, 0, 40, "kneeknob");
+  kneeknob = new Knob(365, 210, 25, 0, 30, 0, 40, "kneeknob");
   knobs.push(kneeknob);
-  releaseknob = new Knob(455, 210, 25, 0, 0, 0, 1, "releaseknob");
+  releaseknob = new Knob(455, 210, 25, 0, 0.25, 0, 1, "releaseknob");
   knobs.push(releaseknob);
-  ratioknob = new Knob(420, 300, 25, 0, 0, 0, 1, "ratioknob");
+  ratioknob = new Knob(420, 300, 25, 0, 12, 1, 20, "ratioknob");
   knobs.push(ratioknob);
-  thresholdknob = new Knob(310, 300, 25, 0, 0, 0, 1, "thresholdknob");
+  thresholdknob = new Knob(310, 300, 25, 0, -24, -100, -0, "thresholdknob");
   knobs.push(thresholdknob);
 
-  reverbtimeknob = new Knob(75, 530, 25, 0, 0, 0, 5, "reverbtimeknob");
-  knobs.push(reverbtimeknob);
-  decayknob = new Knob(155, 530, 25, 0, 0, 0, 5, "decayknob");
+  reverbdurknob = new Knob(75, 530, 25, 0, 3, 0, 10, "reverbdurknob");
+  knobs.push(reverbdurknob);
+  decayknob = new Knob(155, 530, 25, 0, 2, 0, 10, "decayknob");
   knobs.push(decayknob);
 
-  distortionknob = new Knob(290, 605, 25, 0,0, 0, 1,'distortionknob');
+  distortionknob = new Knob(320, 605, 25, 0, 0, 0, 1, "distortionknob");
   knobs.push(distortionknob);
-  oversampleknob = new Knob(390, 605, 25, 0,0, 0, 1,'oversampleknob');
+  oversampleknob = new Knob(420, 605, 25, 0, 0, 0, 1, "oversampleknob");
   knobs.push(oversampleknob);
+
+  lowpassfilter.set(frequencyknob.value,resonanceknob.value);
+  distortioneffect.set(distortionknob.value, oversampleknob.value);
+  compressoreffect.attack(attackknob.value);
+  compressoreffect.knee(kneeknob.value);
+  compressoreffect.release(releaseknob.value);
+  compressoreffect.ratio(ratioknob.value);
+  compressoreffect.threshold(thresholdknob.value);
+  reverbeffect.set(reverbdurknob.value, decayknob.value, false);
+
 }
 
 function writelabels() {
@@ -233,8 +258,8 @@ function writelabels() {
   text("output \n level", 140, 260);
   text("dry/wet", 290, 370);
   text("output \n level", 395, 360);
-  text("dry/wet", 270, 670);
-  text("output \n level", 375, 660);
+  text("dry/wet", 290, 670);
+  text("output \n level", 395, 660);
   text("dry/wet", 50, 660);
   text("output \n level", 140, 650);
   text("  cutoff \nfreqency", 55, 160);
@@ -246,30 +271,36 @@ function writelabels() {
   text("threshold", 390, 270);
   text(" reverb\nduration", 55, 480);
   text("decay\n rate", 140, 480);
-  text("distortion\n amount", 270, 560);
-  text("oversample", 360, 570);
+  text("distortion\n amount", 290, 560);
+  text("oversample", 390, 570);
 
-  text(volumeslider.value(), 630, 230);
+  text(volumeslider.value(), 650, 230);
   text(LP_drywetslider.value(), 90, 330);
   text(LP_outputslider.value(), 175, 330);
   text(DY_drywetslider.value(), 330, 430);
   text(DY_outputslider.value(), 430, 430);
   text(RE_drywetslider.value(), 90, 720);
   text(RE_outputslider.value(), 175, 720);
-  text(WAV_drywetslider.value(), 310, 730);
-  text(WAV_outputslider.value(), 410, 730);
+  text(WAV_drywetslider.value(), 330, 730);
+  text(WAV_outputslider.value(), 430, 730);
 }
 
 function createbtn(text, X, Y, callfunction) {
   let button = createButton(text);
-  button.size(70, 50);
   button.position(X, Y);
   button.style("background-color", "white");
+  button.style("border-radius", "10px");
+  if (text === "Reverse") {
+    button.size(100, 40);
+  } else {
+    button.size(100, 60);
+  }
+
   button.mouseClicked(callfunction);
   return button;
 }
 
-function createslider(minval, maxval, position, range, X, Y,sliderName) {
+function createslider(minval, maxval, position, range, X, Y, sliderName) {
   push();
   drawingContext.shadowOffsetX = 3;
   drawingContext.shadowOffsetY = -1;
@@ -281,6 +312,12 @@ function createslider(minval, maxval, position, range, X, Y,sliderName) {
   slider.position(X, Y);
   slider.style("transform", "rotate(90deg)");
   slider.addClass("mySliders");
+  if (sliderName === "volumeslider") {
+    slider.addClass('volumeslider');
+    slider.style("height", "30px"); 
+    slider.style("width", "120px"); 
+    slider.style("background-color", "#c2dcf0"); 
+  }
   slider.mouseClicked(() => changesliderval(sliderName));
 
   return slider;
@@ -291,7 +328,7 @@ function pausefunction() {
     myaudiofile.pause();
     stopbtn.style("background-color", "white");
     playbtn.style("background-color", "white");
-    pausebtn.style("background-color", "blue");
+    pausebtn.style("background-color", "#1c81ed");
     print("Pause button clicked");
   }
   if (soundFile.isPlaying()) {
@@ -302,7 +339,7 @@ function pausefunction() {
 function playfunction() {
   if (!myaudiofile.isPlaying()) {
     myaudiofile.play();
-    playbtn.style("background-color", "green");
+    playbtn.style("background-color", "#25fae5");
     stopbtn.style("background-color", "white");
     pausebtn.style("background-color", "white");
     print("play button clicked");
@@ -337,7 +374,7 @@ function toendfunction() {
 function loopfunction() {
   if (!islooping) {
     myaudiofile.setLoop(true);
-    loopbtn.style("background-color", "lightgreen");
+    loopbtn.style("background-color", "#c0a6ed");
     islooping = true;
   } else {
     myaudiofile.setLoop(false);
@@ -352,7 +389,7 @@ function recordfunction() {
     getAudioContext().resume();
   }
   if (state === 0 && mic.enabled) {
-    recordbtn.size(100, 50);
+    recordbtn.size(100, 60);
     recordbtn.style("background-color", "#C3EB78");
     recordbtn.html("Recording...");
     recorder.record(soundFile);
@@ -361,11 +398,11 @@ function recordfunction() {
     print("record stoped");
     recorder.stop();
     recordbtn.html("Finished\nrecording Click to download");
-    recordbtn.size(130, 50);
+    recordbtn.size(130, 60);
     recordbtn.style("background-color", "#56cbf9");
     state++;
   } else if (state === 2) {
-    recordbtn.size(70, 50);
+    recordbtn.size(100, 60);
     recordbtn.html("Record");
     recordbtn.style("background-color", "white");
     soundFile.play();
@@ -374,35 +411,34 @@ function recordfunction() {
   }
 }
 function reversefunction() {
+  print('Current reverse state:' ,isreverse);
   if (!isreverse) {
-    myaudiofile.reverseBuffer(true);
-    print(myaudiofile.duration());
-    reversebtn.style("background-color", "lightyellow");
     isreverse = true;
+    reversebtn.style("background-color", "lightyellow");
+    reverbeffect.set(reverbdurknob.value, decayknob.value, true);
   } else {
-    myaudiofile.reverseBuffer(false);
-    reversebtn.style("background-color", "white");
     isreverse = false;
+    reversebtn.style("background-color", "white");
+    reverbeffect.set(reverbdurknob.value, decayknob.value, false);
   }
 }
 
 function changesliderval(sliderName) {
   print("changesliderval");
-  if(sliderName=='volumeslider'){
-    print('volumeslider.value()',volumeslider.value());
+  if (sliderName == "volumeslider") {
     mastervolume.amp(volumeslider.value());
-  }
-  else if (sliderName === 'LP_drywetslider' || sliderName === 'LP_outputslider') {
-    lowpassfilter.Effect(myaudiofile,1,LP_drywetslider.value(),LP_outputslider.value());
-  } else if (sliderName === 'DY_drywetslider' || sliderName === 'DY_outputslider') {
-    compressoreffect.setDryWet(DY_drywetslider.value());
-    compressoreffect.setOutput(DY_outputslider.value());
-  } else if (sliderName === 'RE_drywetslider' || sliderName === 'RE_outputslider') {
+  } else if (sliderName === "LP_drywetslider" || sliderName === "LP_outputslider") {
+    lowpassfilter.drywet(LP_drywetslider.value());
+    lowpassfilter.amp(LP_outputslider.value());
+  } else if (sliderName === "DY_drywetslider" || sliderName === "DY_outputslider") {
+    compressoreffect.drywet(DY_drywetslider.value());
+    compressoreffect.amp(DY_outputslider.value());
+  } else if (sliderName === "RE_drywetslider" || sliderName === "RE_outputslider") {
     reverbeffect.drywet(RE_drywetslider.value());
-    reverbeffect.output(RE_outputslider.value());
-  } else if (sliderName === 'WAV_drywetslider' || sliderName === 'WAV_outputslider') {
-    distortioneffect.setDryWet(WAV_drywetslider.value());
-    distortioneffect.setOutput(WAV_outputslider.value());
+    reverbeffect.amp(RE_outputslider.value());
+  } else if (sliderName === "WAV_drywetslider" || sliderName === "WAV_outputslider") {
+    distortioneffect.drywet(WAV_drywetslider.value());
+    distortioneffect.amp(WAV_outputslider.value());
   }
 }
 
@@ -411,11 +447,12 @@ function mousePressed() {
     knob.knobclicked();
     if (knob.isdragging) {
       knob.updateknob();
-      print("selected knob", knob);
-      if (knob.name == "frequencyknob" || knob.name =="resonanceknob") {
-        lowpassfilter.set(frequencyknob.value, resonanceknob.value);
-      } else if (knob.name == "reverbtimeknob" || knob.name == "decayknob") {
-        reverbeffect.process(myaudiofile, reverbtimeknob.value, decayknob.value, false);
+      if (knob.name == "frequencyknob" || knob.name == "resonanceknob") {
+        print(frequencyknob.value,res=resonanceknob.value);
+        lowpassfilter.set(frequencyknob.value,resonanceknob.value);
+      } else if (knob.name == "reverbdurknob" || knob.name == "decayknob") {
+        print( reverbdurknob.value, decayknob.value);
+        reverbeffect.set(reverbdurknob.value, decayknob.value, false);
       } else if (
         knob.name == "attackknob" ||
         knob.name == "kneeknob" ||
@@ -423,15 +460,13 @@ function mousePressed() {
         knob.name == "ratioknob" ||
         knob.name == "thresholdknob"
       ) {
-        setcompressor.attack(
-          attackknob.value,
-          kneeknob.value,
-          ratioknob.value,
-          thresholdknob.value,
-          releaseknob.value
-        );
+        compressoreffect.attack(attackknob.value);
+        compressoreffect.knee(kneeknob.value);
+        compressoreffect.release(releaseknob.value);
+        compressoreffect.ratio(ratioknob.value);
+        compressoreffect.threshold(thresholdknob.value);
       } else if (knob.name == "distortionknob" || knob.name == "oversampleknob") {
-        distortioneffect.set(distortionknob.value, oversampleknob.value);
+        distortioneffect.set(distortionknob.value);
       }
     }
   }
