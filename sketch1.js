@@ -58,7 +58,7 @@ let isreverse = false;
 
 function preload() {
   soundFormats("mp3", "wav");
-  myaudiofile = loadSound("sound/house_lo.mp3");
+  myaudiofile = loadSound("sound/Rudyard kipling poem.wav");
 }
 
 function setupfilters() {
@@ -147,8 +147,8 @@ function drawingframe() {
   //spectrum rectangles
   push();
   fill("#e2e1e8");
-  rect(535, 320, 640, 230);
-  rect(535, 560, 640, 230);
+  rect(535, 320, 660, 230);
+  rect(535, 560, 660, 230);
   pop();
 
   fill(0);
@@ -176,7 +176,7 @@ function drawbuttons() {
 }
 
 function drawslider() {
-  volumeslider = createslider(0, 20, 3, 1, 1010, 220, "volumeslider");
+  volumeslider = createslider(0, 100, 10, 1, 1010, 220, "volumeslider");
   LP_drywetslider = createslider(0, 1, 0.5, 0.1, 140, 330, "LP_drywetslider");
   LP_outputslider = createslider(0, 1, 0.5, 0.1, 225, 330, "LP_outputslider");
   WAV_drywetslider = createslider(0, 1, 0.5, 0.1, 380, 730, "WAV_drywetslider");
@@ -289,12 +289,12 @@ function drawspectrum() {
   push();
   let boxX = 540;
   let boxY = 345;
-  let boxwidth = 2800;
+  let boxwidth = 1000;
   let boxheight = 200;
 
   let boxX2 = 540;
   let boxY2 = 585;
-  let boxwidth2 = 630;
+  let boxwidth2 = 1000;
   let boxheight2 = 200;
 
   //Drawing spectrum for original sound 
@@ -415,6 +415,7 @@ function stopfunction() {
 
 function restartfunction() {
   myaudiofile.jump(0);
+  playfunction();
   print("restart button clicked");
 }
 
@@ -428,6 +429,7 @@ function loopfunction() {
   if (!islooping) {
     myaudiofile.setLoop(true);
     loopbtn.style("background-color", "#c0a6ed");
+    playfunction();
     islooping = true;
   } else {
     myaudiofile.setLoop(false);
