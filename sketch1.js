@@ -44,7 +44,7 @@ let soundFile;
 let state = 0;
 
 // apply differnt filter
-let choosefilter;
+let choosefilter='lowpass';
 
 // effects 
 let lowpassfilter;
@@ -128,11 +128,12 @@ function draw() {
     text(knob.value.toFixed(1), knob.x, knob.y + 40);
   }
 
-  drawspectrum();
-
-  if (myaudiofile.currentTime().toFixed(2) == myaudiofile.duration().toFixed(2)) {
+  if (!myaudiofile.isPlaying()) {
     playbtn.style("background-color", "white");
   }
+  drawspectrum();
+
+
 }
 
 function drawingframe() {
@@ -232,6 +233,7 @@ function drawknobs() {
   delaytimeknob = new Knob(610, 200, 25, 0, 0, 0, 1, "delaytimeknob");
   knobs.push(delaytimeknob);
 
+  lowpassfilter.setType(choosefilter);
   lowpassfilter.set(frequencyknob.value,resonanceknob.value);
   distortioneffect.set(distortionknob.value, oversampleknob.value);
   delayeffect.delayTime(delaytimeknob.value);
@@ -270,7 +272,6 @@ function writelabels() {
   text("distortion\n amount", 290, 560);
   text("oversample", 390, 570);
   text("  cutoff \nfreqency", 55, 160);
-
 
   text(volumeslider.value(), 980, 230);
   text(LP_drywetslider.value(), 90, 330);
@@ -488,7 +489,6 @@ function mousePressed() {
       } else if (knob.name == "reverbdurknob" || knob.name == "decayknob") {
         reverbeffect.set(reverbdurknob.value, decayknob.value, false);
       } else if (knob.name == "delaytimeknob" ) {
-        print('delayyy knob ',delaytimeknob.value);
         delayeffect.delayTime(delaytimeknob.value);
       } else if (
         knob.name == "attackknob" ||
